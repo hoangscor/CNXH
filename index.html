@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Phá Tín Ngưỡng & Tôn Giáo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #4f46e5; /* indigo-600 */
+            border-bottom-color: #4f46e5;
+        }
+        .comparison-btn {
+            transition: all 0.3s ease;
+        }
+        .comparison-btn.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #e5e7eb;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            text-align: center;
+            color: #4b5563;
+            max-width: 48rem;
+            margin: 0 auto 3rem auto;
+        }
+        /* AI Feature Styles */
+        #ai-response-container p {
+            margin-bottom: 1rem;
+        }
+        #ai-response-container ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+         /* Custom Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-700 antialiased">
+
+    <!-- Modal for messages -->
+    <div id="message-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h3 id="modal-title" class="text-xl font-bold mb-4">Thông báo</h3>
+            <p id="modal-message" class="mb-6"></p>
+            <button id="modal-close-btn" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition">Đóng</button>
+        </div>
+    </div>
+
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-xl font-bold text-indigo-600">Nhóm 4 | CNXHKH</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#tong-quan" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Tổng quan</a>
+                        <a href="#so-sanh" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">So sánh</a>
+                        <a href="#ban-chat" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Bản chất</a>
+                        <a href="#viet-nam" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Việt Nam</a>
+                        <a href="#thach-thuc" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Thách thức</a>
+                        <a href="#ai-analyzer" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">AI Phân tích</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-indigo-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                 <a href="#tong-quan" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-600">Tổng quan</a>
+                <a href="#so-sanh" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-600">So sánh</a>
+                <a href="#ban-chat" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-600">Bản chất</a>
+                <a href="#viet-nam" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-600">Việt Nam</a>
+                <a href="#thach-thuc" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-600">Thách thức</a>
+                <a href="#ai-analyzer" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-600">AI Phân tích</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <section class="text-center mb-16 md:mb-24">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-4 tracking-tight">Vấn Đề Tín Ngưỡng và Tôn Giáo</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Phân tích dưới góc nhìn Chủ nghĩa Xã hội Khoa học và thực tiễn tại Việt Nam</p>
+        </section>
+        
+        <section id="tong-quan" class="my-16 scroll-mt-16">
+            <h2 class="section-title">Khái Niệm Nền Tảng</h2>
+            <p class="section-subtitle">Để bắt đầu, chúng ta cần hiểu rõ hai khái niệm cốt lõi: Tín ngưỡng và Tôn giáo. Mặc dù thường được sử dụng thay thế cho nhau, chúng có những đặc điểm riêng biệt quan trọng.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-8">
+                    <div class="flex items-center mb-4">
+                        <span class="text-4xl mr-4">🙏</span>
+                        <h3 class="text-2xl font-bold text-indigo-700">Tín ngưỡng</h3>
+                    </div>
+                    <p class="mb-4">Là niềm tin của cá nhân hoặc cộng đồng vào các yếu tố siêu nhiên, thần bí. Tín ngưỡng thường mang tính dân gian, gắn liền với phong tục, tập quán truyền thống để cầu mong sự bình an về tinh thần.</p>
+                    <div class="text-sm">
+                        <p class="font-semibold mb-2">Ví dụ tiêu biểu ở Việt Nam:</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600">
+                            <li>Thờ cúng tổ tiên</li>
+                            <li>Thờ cúng anh hùng dân tộc (Trần Hưng Đạo)</li>
+                            <li>Tín ngưỡng thờ Mẫu</li>
+                            <li>Thờ thần Thành hoàng làng</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card p-8">
+                    <div class="flex items-center mb-4">
+                        <span class="text-4xl mr-4">⛪</span>
+                        <h3 class="text-2xl font-bold text-green-700">Tôn giáo</h3>
+                    </div>
+                    <p class="mb-4">Là một hệ thống niềm tin có tổ chức chặt chẽ, bao gồm giáo lý, giáo luật, lễ nghi và cơ cấu giáo hội. Tôn giáo có tính hệ thống và phổ quát cao hơn tín ngưỡng.</p>
+                    <div class="text-sm">
+                        <p class="font-semibold mb-2">Ví dụ phổ biến:</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600">
+                            <li>Phật giáo</li>
+                            <li>Công giáo (Thiên Chúa giáo)</li>
+                            <li>Hồi giáo</li>
+                            <li>Tin Lành</li>
+                            <li>Cao Đài, Phật giáo Hòa Hảo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="so-sanh" class="my-24 scroll-mt-16">
+            <h2 class="section-title">Bảng Vàng So Sánh</h2>
+            <p class="section-subtitle">Sự nhầm lẫn giữa các khái niệm là phổ biến. Hãy cùng làm rõ sự khác biệt giữa các hình thức niềm tin này thông qua công cụ so sánh tương tác dưới đây.</p>
+            <div class="flex justify-center flex-wrap gap-2 md:gap-4 mb-8">
+                <button class="comparison-btn active px-4 py-2 bg-white border border-gray-300 rounded-full font-semibold text-gray-700" data-target="content-1">Tôn giáo vs. Tín ngưỡng</button>
+                <button class="comparison-btn px-4 py-2 bg-white border border-gray-300 rounded-full font-semibold text-gray-700" data-target="content-2">Tín ngưỡng vs. Mê tín</button>
+                <button class="comparison-btn px-4 py-2 bg-white border border-gray-300 rounded-full font-semibold text-gray-700" data-target="content-3">Tôn giáo vs. Tà giáo</button>
+            </div>
+            <div id="comparison-content" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-gray-200">
+                <div class="comparison-item" id="content-1">
+                    <div class="grid md:grid-cols-2 gap-6 text-center">
+                        <div>
+                            <h4 class="font-bold text-lg text-green-700 mb-2">Tôn giáo</h4>
+                            <ul class="space-y-2 text-left">
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Có hệ thống tổ chức chặt chẽ (giáo hội, giáo sĩ).</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Có hệ thống giáo lý, kinh điển rõ ràng.</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Mang tính phổ quát, toàn cầu.</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Tuân thủ giáo luật nghiêm ngặt.</li>
+                            </ul>
+                        </div>
+                        <div class="border-t md:border-t-0 md:border-l border-gray-200 pt-6 md:pt-0 md:pl-6">
+                            <h4 class="font-bold text-lg text-indigo-700 mb-2">Tín ngưỡng</h4>
+                            <ul class="space-y-2 text-left">
+                                <li class="flex items-start"><span class="text-indigo-500 mr-2 mt-1">✓</span> Thường không có tổ chức, mang tính cộng đồng.</li>
+                                <li class="flex items-start"><span class="text-indigo-500 mr-2 mt-1">✓</span> Chủ yếu truyền miệng, không có giáo lý hệ thống.</li>
+                                <li class="flex items-start"><span class="text-indigo-500 mr-2 mt-1">✓</span> Mang tính địa phương, bản địa.</li>
+                                <li class="flex items-start"><span class="text-indigo-500 mr-2 mt-1">✓</span> Linh hoạt, gắn liền với phong tục.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-item hidden" id="content-2">
+                    <h4 class="font-bold text-lg text-center mb-4">Tín ngưỡng vs. Mê tín dị đoan</h4>
+                    <p class="text-center mb-6 text-gray-600">Tín ngưỡng là di sản văn hóa, còn mê tín dị đoan là biểu hiện tiêu cực cần loại bỏ.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h5 class="font-semibold text-blue-800 mb-2">Tín ngưỡng (Lành mạnh)</h5>
+                            <p>Mang lại sự bình an tinh thần, củng cố đoàn kết cộng đồng và bảo tồn giá trị văn hóa (ví dụ: lễ giỗ tổ Hùng Vương).</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h5 class="font-semibold text-red-800 mb-2">Mê tín dị đoan (Tiêu cực)</h5>
+                            <p>Niềm tin mù quáng, gây hại cho cá nhân và xã hội, thường bị lợi dụng để trục lợi (ví dụ: đốt vàng mã quá mức, xem bói toán lừa đảo).</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-item hidden" id="content-3">
+                    <h4 class="font-bold text-lg text-center mb-4">Tôn giáo (Chân chính) vs. Tà giáo</h4>
+                    <p class="text-center mb-6 text-gray-600">Tôn giáo hướng con người đến giá trị tốt đẹp, trong khi tà giáo gây ra nhiều hệ lụy nguy hiểm cho xã hội.</p>
+                     <div class="grid md:grid-cols-2 gap-6 text-center">
+                        <div>
+                            <h4 class="font-bold text-lg text-green-700 mb-2">Tôn giáo</h4>
+                            <ul class="space-y-2 text-left">
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Giáo lý hướng thiện, mang tính nhân văn.</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Hoạt động công khai, tuân thủ pháp luật.</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Tôn trọng giá trị gia đình và xã hội.</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span> Góp phần vào sự ổn định và phát triển.</li>
+                            </ul>
+                        </div>
+                        <div class="border-t md:border-t-0 md:border-l border-gray-200 pt-6 md:pt-0 md:pl-6">
+                            <h4 class="font-bold text-lg text-red-700 mb-2">Tà giáo</h4>
+                            <ul class="space-y-2 text-left">
+                                <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">✗</span> Giáo lý méo mó, cực đoan, phi đạo đức.</li>
+                                <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">✗</span> Hoạt động bí mật, bất hợp pháp, trục lợi.</li>
+                                <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">✗</span> Phá vỡ hạnh phúc gia đình, chia rẽ xã hội.</li>
+                                <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">✗</span> Sùng bái giáo chủ một cách mù quáng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ban-chat" class="my-24 scroll-mt-16">
+            <h2 class="section-title">Bản Chất Tôn Giáo</h2>
+            <p class="section-subtitle">Theo quan điểm Chủ nghĩa Mác – Lênin, tôn giáo là một hiện tượng xã hội - lịch sử, là "sự phản ánh hư ảo" hiện thực khách quan vào đầu óc con người. Hãy tìm hiểu sâu hơn về nguồn gốc và các tính chất của nó.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-6">
+                    <h3 class="font-bold text-xl mb-4 text-center text-gray-800">Nguồn Gốc Của Tôn Giáo</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-semibold text-lg">⚙️ Kinh tế – Xã hội</h4>
+                            <p class="text-sm text-gray-600">Sự bất lực của con người trước thiên nhiên (thời kỳ đầu) và áp bức, bóc lột (xã hội có giai cấp) đã tạo ra nhu cầu tìm kiếm sự an ủi, giải thoát ở thế giới bên kia.</p>
+                        </div>
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-semibold text-lg">🧠 Nhận thức</h4>
+                            <p class="text-sm text-gray-600">Do hạn chế về trình độ khoa học, con người chưa giải thích được các hiện tượng tự nhiên, xã hội và có xu hướng thần thánh hóa chúng.</p>
+                        </div>
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-semibold text-lg">❤️ Tâm lý</h4>
+                            <p class="text-sm text-gray-600">Nỗi sợ hãi trước rủi ro, bệnh tật, cái chết... cùng với lòng biết ơn, tôn kính đã tạo ra cơ sở tâm lý cho niềm tin vào các đấng siêu nhiên.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-xl mb-4 text-center text-gray-800">Tính Chất Của Tôn Giáo</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-semibold text-lg">⏳ Tính lịch sử</h4>
+                            <p class="text-sm text-gray-600">Tôn giáo không phải vĩnh hằng. Nó ra đời, phát triển và sẽ tàn lụi khi nguồn gốc sinh ra nó mất đi (khi con người làm chủ hoàn toàn tự nhiên và xã hội).</p>
+                        </div>
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-semibold text-lg">👨‍👩‍👧‍👦 Tính quần chúng</h4>
+                            <p class="text-sm text-gray-600">Tôn giáo là một sinh hoạt tinh thần của một bộ phận đông đảo quần chúng nhân dân. Vì vậy, cần tôn trọng quyền tự do tín ngưỡng của họ.</p>
+                        </div>
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-semibold text-lg">🏛️ Tính chính trị</h4>
+                            <p class="text-sm text-gray-600">Giai cấp thống trị thường lợi dụng tôn giáo để củng cố quyền lực. Ngược lại, tôn giáo cũng có thể bị các thế lực thù địch lợi dụng để chống phá chế độ.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="viet-nam" class="my-24 scroll-mt-16 bg-white rounded-xl shadow-lg border border-gray-200 p-8 md:p-12">
+            <h2 class="section-title">Đặc Điểm Tôn Giáo ở Việt Nam</h2>
+            <p class="section-subtitle">Việt Nam là một quốc gia có đời sống tín ngưỡng, tôn giáo vô cùng phong phú và đặc sắc. Bức tranh tôn giáo Việt Nam mang những nét riêng biệt, phản ánh lịch sử và văn hóa dân tộc.</p>
+            <div class="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div>
+                    <h3 class="font-bold text-2xl mb-6 text-gray-800">Những Nét Đặc Trưng</h3>
+                    <ul class="space-y-5">
+                        <li class="flex">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg">1</div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold text-lg">Quốc gia đa tôn giáo</h4>
+                                <p class="text-gray-600">Việt Nam là nơi hội tụ của nhiều tôn giáo lớn (Phật giáo, Công giáo...) và các tôn giáo nội sinh (Cao Đài, Hòa Hảo), tạo nên sự đa dạng, phong phú.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-lg">2</div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold text-lg">Đoàn kết, chung sống hòa bình</h4>
+                                <p class="text-gray-600">Trong lịch sử, Việt Nam chưa từng có chiến tranh tôn giáo. Các tôn giáo chung sống hòa thuận, đoàn kết trong khối đại đoàn kết dân tộc.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-lg">3</div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold text-lg">Lòng yêu nước & tinh thần "Tốt đời, đẹp đạo"</h4>
+                                <p class="text-gray-600">Đa số tín đồ, chức sắc luôn đồng hành cùng dân tộc trong các cuộc kháng chiến, xây dựng đất nước với phương châm sống phúc âm giữa lòng dân tộc.</p>
+                            </div>
+                        </li>
+                         <li class="flex">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold text-lg">4</div>
+                            <div class="ml-4">
+                                <h4 class="font-semibold text-lg">Gắn bó giữa dân tộc và tôn giáo</h4>
+                                <p class="text-gray-600">Một số dân tộc thiểu số có sự gắn kết đặc thù với một tôn giáo nhất định (Khmer - Phật giáo Nam tông, Chăm - Hồi giáo...)</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl mb-4 text-center text-gray-800">Bức Tranh Tôn Giáo Việt Nam (ước tính)</h3>
+                    <div class="chart-container">
+                        <canvas id="religionChart"></canvas>
+                    </div>
+                     <p class="text-center text-sm text-gray-500 mt-2">Biểu đồ thể hiện sự đa dạng tôn giáo tại Việt Nam.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="thach-thuc" class="my-24 scroll-mt-16">
+            <h2 class="section-title">Thách Thức & Giải Pháp</h2>
+            <p class="section-subtitle">Bên cạnh những mặt tích cực, đời sống tôn giáo cũng tiềm ẩn những vấn đề phức tạp. Đảng và Nhà nước Việt Nam luôn có những chính sách, giải pháp phù hợp để đảm bảo tự do tín ngưỡng đồng thời giữ vững an ninh quốc gia.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-8 bg-red-50 border-red-200">
+                    <h3 class="font-bold text-2xl text-red-800 mb-4 text-center">🚨 Thách Thức</h3>
+                    <ul class="space-y-3 list-inside list-disc">
+                        <li>Sự xuất hiện của các "tà giáo", "hiện tượng tôn giáo mới" với hoạt động mê tín, trục lợi, gây mất ổn định xã hội.</li>
+                        <li>Hoạt động truyền đạo trái phép, đặc biệt ở vùng sâu, vùng xa.</li>
+                        <li>Các thế lực thù địch lợi dụng vấn đề "tự do tôn giáo" để xuyên tạc, kích động, chống phá Nhà nước (âm mưu "diễn biến hòa bình").</li>
+                        <li>Việc quản lý các hoạt động tôn giáo trên không gian mạng còn nhiều khó khăn.</li>
+                    </ul>
+                </div>
+                <div class="card p-8 bg-green-50 border-green-200">
+                    <h3 class="font-bold text-2xl text-green-800 mb-4 text-center">💡 Giải Pháp</h3>
+                    <ul class="space-y-3 list-inside list-disc">
+                        <li>Tôn trọng và đảm bảo quyền tự do tín ngưỡng, tôn giáo của nhân dân.</li>
+                        <li>Hoàn thiện hệ thống pháp luật (Luật Tín ngưỡng, Tôn giáo 2016) và tăng cường quản lý nhà nước.</li>
+                        <li>Đoàn kết các tôn giáo, đồng bào có đạo và không có đạo trong khối đại đoàn kết toàn dân tộc.</li>
+                        <li>Đấu tranh, ngăn chặn các hoạt động lợi dụng tôn giáo, hoạt động tà giáo.</li>
+                        <li>Phát triển kinh tế-xã hội, nâng cao đời sống vật chất, tinh thần và dân trí cho nhân dân, đặc biệt là vùng có đông đồng bào theo đạo.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ========== GEMINI AI FEATURE SECTION ========== -->
+        <section id="ai-analyzer" class="my-24 scroll-mt-16">
+            <h2 class="section-title">Phân Tích Tình Huống với AI</h2>
+            <p class="section-subtitle">Bạn đang gặp một tình huống liên quan đến tín ngưỡng hoặc một nhóm tôn giáo mới? Hãy mô tả tình huống đó bên dưới. Trợ lý AI sẽ giúp bạn phân tích dựa trên các khái niệm đã trình bày để đưa ra góc nhìn khách quan.</p>
+            <div class="max-w-3xl mx-auto card p-6 md:p-8">
+                <div class="mb-4">
+                    <label for="scenario-input" class="block mb-2 font-semibold text-gray-700">Mô tả tình huống của bạn:</label>
+                    <textarea id="scenario-input" rows="5" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ví dụ: Một người bạn rủ tôi tham gia một nhóm tâm linh mới, họ hứa hẹn chữa được mọi bệnh tật và làm giàu nhanh chóng chỉ bằng cách đóng góp tiền và tin tưởng tuyệt đối vào người đứng đầu..."></textarea>
+                </div>
+                <button id="analyze-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition flex items-center justify-center gap-2">
+                    <span class="text-xl">✨</span>
+                    <span>Phân tích Tình huống</span>
+                </button>
+                <div id="ai-response-container" class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-200 min-h-[100px] hidden">
+                    <!-- AI response will be injected here -->
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+    
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto py-6 px-4 text-center">
+            <p>Bài thuyết trình Chủ nghĩa Xã hội Khoa học - Nhóm 4</p>
+            <p class="text-sm text-gray-400 mt-1">Nội dung được tổng hợp và phân tích dựa trên giáo trình và tài liệu tham khảo. Tính năng phân tích AI được cung cấp bởi Gemini.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Existing JS for navigation, chart, and comparison tabs ---
+            const comparisonBtns = document.querySelectorAll('.comparison-btn');
+            const comparisonContents = document.querySelectorAll('.comparison-item');
+
+            comparisonBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    comparisonBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const targetId = btn.getAttribute('data-target');
+                    comparisonContents.forEach(content => {
+                        content.classList.toggle('hidden', content.id !== targetId);
+                    });
+                });
+            });
+
+            const ctx = document.getElementById('religionChart').getContext('2d');
+            const religionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Không tôn giáo / Tín ngưỡng dân gian', 'Phật giáo', 'Công giáo', 'Khác (Hòa Hảo, Cao Đài, Tin Lành...)'],
+                    datasets: [{
+                        label: 'Phân bố Tôn giáo tại Việt Nam',
+                        data: [73.7, 14.9, 8.5, 2.9],
+                        backgroundColor: ['#a5b4fc', '#fcd34d', '#93c5fd', '#86efac'],
+                        borderColor: ['#e5e7eb', '#e5e7eb', '#e5e7eb', '#e5e7eb'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#4b5563', font: { family: "'Be Vietnam Pro', sans-serif" } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return `${context.label || ''}: ${context.parsed || 0}%`; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
+                });
+            });
+
+            const sections = document.querySelectorAll('section[id]');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (`#${entry.target.id}` === link.getAttribute('href')) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+            sections.forEach(section => observer.observe(section));
+
+            // --- NEW JS for Gemini AI Feature ---
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const scenarioInput = document.getElementById('scenario-input');
+            const responseContainer = document.getElementById('ai-response-container');
+            
+            // Modal elements
+            const modal = document.getElementById('message-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            function showModal(title, message) {
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modal.classList.remove('hidden');
+            }
+
+            modalCloseBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => {
+                if(e.target === modal) modal.classList.add('hidden');
+            });
+
+
+            analyzeBtn.addEventListener('click', async () => {
+                const userScenario = scenarioInput.value.trim();
+                if (!userScenario) {
+                    showModal('Lỗi', 'Vui lòng nhập tình huống của bạn vào ô trống.');
+                    return;
+                }
+
+                // Show loading state
+                responseContainer.classList.remove('hidden');
+                responseContainer.innerHTML = '<p class="text-center text-gray-500">AI đang phân tích, vui lòng chờ trong giây lát...</p>';
+                analyzeBtn.disabled = true;
+                analyzeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+                // --- Prompt Engineering ---
+                const context = `
+                    Bối cảnh: Bạn là một trợ lý AI chuyên về xã hội học tôn giáo tại Việt Nam. Dựa trên các nguyên tắc và định nghĩa dưới đây, hãy phân tích tình huống của người dùng.
+                    
+                    1. Phân biệt Tôn giáo chân chính và Tà giáo:
+                       - Tôn giáo: Giáo lý hướng thiện, nhân văn; hoạt động công khai, tuân thủ pháp luật; tôn trọng giá trị gia đình, xã hội; góp phần ổn định.
+                       - Tà giáo: Giáo lý méo mó, cực đoan; hoạt động bí mật, bất hợp pháp, trục lợi; phá vỡ hạnh phúc gia đình; sùng bái giáo chủ mù quáng.
+
+                    2. Phân biệt Tín ngưỡng và Mê tín dị đoan:
+                       - Tín ngưỡng: Di sản văn hóa, mang lại sự bình an, củng cố đoàn kết cộng đồng (ví dụ: thờ cúng tổ tiên).
+                       - Mê tín dị đoan: Niềm tin mù quáng, gây hại, bị lợi dụng để trục lợi (ví dụ: bói toán lừa đảo, chữa bệnh bằng phương pháp phi khoa học).
+                    
+                    3. Quan điểm của Nhà nước Việt Nam:
+                       - Tôn trọng quyền tự do tín ngưỡng, tôn giáo.
+                       - Đấu tranh, ngăn chặn các hoạt động lợi dụng tôn giáo và các hoạt động tà giáo, mê tín dị đoan.
+                       - Đề cao việc tuân thủ pháp luật.
+                `;
+
+                const prompt = `${context}\n\nTình huống của người dùng: "${userScenario}"\n\nNhiệm vụ của bạn: Cung cấp một phân tích khách quan, trung lập bằng tiếng Việt. Xác định các dấu hiệu tiềm ẩn có thể trùng khớp với định nghĩa về 'tà giáo' hoặc 'mê tín dị đoan' dựa trên bối cảnh đã cho. Đưa ra các điểm cần cân nhắc thay vì lời khuyên trực tiếp. Cấu trúc câu trả lời rõ ràng, dễ hiểu.`;
+
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Leave empty, handled by the environment
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        
+                        let text = result.candidates[0].content.parts[0].text;
+                        // Basic formatting from markdown-like text
+                        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+                        text = text.replace(/\n/g, '<br>'); // Newlines
+                        responseContainer.innerHTML = `<h4 class="font-bold text-lg mb-3 text-gray-800">Kết quả Phân tích của AI:</h4><div class="text-left">${text}</div>`;
+                    } else {
+                         // Handle cases where the response structure is unexpected or content is missing
+                        throw new Error("Phản hồi từ AI không hợp lệ hoặc không có nội dung.");
+                    }
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    responseContainer.innerHTML = `<p class="text-center text-red-500">Đã xảy ra lỗi khi phân tích. Vui lòng thử lại sau.</p>`;
+                    showModal('Lỗi', `Đã xảy ra lỗi khi kết nối với dịch vụ AI: ${error.message}`);
+                } finally {
+                    // Re-enable button
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
